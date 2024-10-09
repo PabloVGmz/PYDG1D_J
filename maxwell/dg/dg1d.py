@@ -30,8 +30,6 @@ class DG1D(SpatialDiscretization):
         else:          
             self.epsilon = np.array(epsilon)
 
-        
-        
         self.mu = np.ones(mesh.number_of_elements())
 
         self.x = nodes_coordinates(n_order, mesh.EToV, mesh.vx)
@@ -179,7 +177,19 @@ class DG1D(SpatialDiscretization):
         flux_H = self.computeFluxH(E, H)
         rhs_drE = np.matmul(self.diff_matrix, E)
         rhsH = 1/self.mu * (np.multiply(-1*self.rx, rhs_drE) +
-                            np.matmul(self.lift, self.f_scale * flux_H)-J/self.mu)
+                            np.matmul(self.lift, self.f_scale * flux_H)-J/self.mu) #In here, indeed, the term J appears, but
+        # J is simply rho*E, and because E is updated at every step, we cannot define J as fields['J'], unless we update it at every
+        # step too. The easiest way to add the conductivity to this term would be to simply swap J by rho*E.
+        # Also, the mu term affects the J term only once, not twice (it's outside the parenthesis already).
+        # It is also important to note that when we perform integration by parts, the J term does not have spatial derivatives,
+        # so when we integrate, we will obtain a Mass Matrix similar to the one we obtain in the temporal term,
+        # but because the rhs of the equation is multiplied by the inverse of the mass matrix (that comes from the temporal term),
+        # the one from the J term will cancel with it, and thus the J term does not need to be multiplied by a mass matrix, nor the inverse.
+        # It is still important to remember the possible presence of said Mass Matrix.
+
+        # tl;dr - If you do not update J at every time, you will always be substracting the initialFieldJ you loaded at the start of
+        # the test every single step, and that wouldn't be correct. We need to subtract the electric field as its updated,
+        # by using rho*E instead of J.
         return rhsH
 
     def computeRHS(self, fields):

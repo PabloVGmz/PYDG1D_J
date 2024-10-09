@@ -24,7 +24,13 @@ def test_pec_dielectrico_upwind_J():
     z_1=np.sqrt(mu_1/epsilon_1)
     z_2=np.sqrt(mu_2/epsilon_2)
     v = np.zeros(100)
-    rho=1
+    rho=1 # Ideally, we want conductivity (or resistivity) to also be a vector, similar to epsilon or mu.
+    # The idea behind it is that each element can be made of a different material, with different properties.
+    # We should still have epsilon and mu be consistent with the vector position of the material properties.
+    # Where we have vacuum, rho = 0 and thus the J term will not affect the free space fields.
+    # Where we have a conductive element, rho =/= 0 and thus the J term will affect the equations.
+    # You can adjust epsilon and mu to the material properties, but for the easiest cases, 
+    # inside the conductive material, you can set them to 1.
     epsilons = epsilon_1*np.ones(100)  
     epsilons[50:99]=epsilon_2
 
@@ -47,12 +53,14 @@ def test_pec_dielectrico_upwind_J():
     s0 = 0.50
     initialFieldE = np.exp(-(sp.x+2)**2/(2*s0**2))
     initialFieldH = initialFieldE
-    initialFieldJ = v*rho
-    # initialFieldJ = np.zeros(initialFieldE.shape)
+    initialFieldJ = v*rho #This one confuses me a bit, as you mention this variable is equal to the speed of the wave times conductivity.
+    # initialFieldJ = np.zeros(initialFieldE.shape). Leaving rho aside, J itself should be (A m−2), and from this equation it'd be (m s-1),
+    # which sadly doesn't make much sense. We do not need to have an initial field for J in almost any setup, as we should always avoid for
+    # the initial field to be inside the material if possible.
 
     driver['E'][:] = initialFieldE[:]
     driver['H'][:] = initialFieldH[:]
-    driver['J'][:] = initialFieldJ[:]
+    driver['J'][:] = initialFieldJ[:] # Same as before.
         
     driver.run_until(final_time)
 

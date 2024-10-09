@@ -39,48 +39,6 @@ class MaxwellDriver:
         # Init time integrator
         if timeIntegratorType == 'EULER':
             self.timeIntegrator = EULER(self.sp, self.fields)   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
         elif timeIntegratorType == 'LSERK4':
             self.timeIntegrator = LSERK4(self.sp, self.fields)
         elif timeIntegratorType == 'LSERK74':
