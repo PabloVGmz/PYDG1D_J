@@ -6,7 +6,7 @@ from .mesh1d import Mesh1D
 
 
 class DG1D(SpatialDiscretization):
-    def __init__(self, n_order: int, mesh: Mesh1D, fluxType="Upwind",epsilon=None):
+    def __init__(self, n_order: int, mesh: Mesh1D, fluxType="Upwind",epsilon=None,rho=None):
         SpatialDiscretization.__init__(self, mesh)
         
         assert n_order > 0
@@ -30,7 +30,13 @@ class DG1D(SpatialDiscretization):
         else:          
             self.epsilon = np.array(epsilon)
 
-        
+        #Necesito rho para calcular J
+        if rho is None:
+            self.rho = np.zeros(mesh.number_of_elements())
+        elif len(rho) != mesh.number_of_elements():
+            raise ValueError("El tamaño del vector de densidad de carga debe coincidir con el número de elementos en la malla.")
+        else:          
+            self.rho = np.array(rho)       
         
         self.mu = np.ones(mesh.number_of_elements())
 
@@ -80,9 +86,9 @@ class DG1D(SpatialDiscretization):
         E = np.zeros([self.number_of_nodes_per_element(),
                       self.mesh.number_of_elements()])
         H = np.zeros(E.shape)
-        J= np.zeros(E.shape)
 
-        return {"E": E, "H": H, "J": J}
+
+        return {"E": E, "H": H}
 
     def get_impedance(self):
         Z_imp = np.zeros(self.x.shape)
@@ -174,12 +180,11 @@ class DG1D(SpatialDiscretization):
     def computeRHSH(self, fields):
         E = fields['E']
         H = fields['H']
-        J=fields['J']
 
         flux_H = self.computeFluxH(E, H)
         rhs_drE = np.matmul(self.diff_matrix, E)
         rhsH = 1/self.mu * (np.multiply(-1*self.rx, rhs_drE) +
-                            np.matmul(self.lift, self.f_scale * flux_H)-J/self.mu)
+                            np.matmul(self.lift, self.f_scale * flux_H)-np.matmul(self.rho,E))
         return rhsH
 
     def computeRHS(self, fields):

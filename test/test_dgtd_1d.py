@@ -95,6 +95,7 @@ def test_pec_dielectrico_upwind_v():
         n_order=3,
         mesh=Mesh1D(L1, L2, elements, boundary_label="PEC"),
         epsilon=epsilons
+        rho=np.zeros(100)
     )
     driver = MaxwellDriver(sp)
 
