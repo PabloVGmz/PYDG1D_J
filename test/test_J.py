@@ -81,3 +81,4 @@ def test_pec_dielectrico_upwind_J():
         plt.grid(which='both')
         plt.pause(0.01)
         plt.cla()
+
