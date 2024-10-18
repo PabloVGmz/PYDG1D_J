@@ -1,10 +1,86 @@
-from pytest import approx
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import pytest
+import time
 
-import maxwell.dg.dg1d_tools as dg
-import maxwell.dg.mesh1d as ms
 
+from maxwell.driver import *
+from maxwell.dg.mesh1d import *
+from maxwell.dg.dg1d import *
+from maxwell.fd.fd1d import *
+
+
+from nodepy import runge_kutta_method as rk
+
+def test_pec_dielectrico_upwind_J():
+    # Defining material properties
+    epsilon_1 = 1
+    epsilon_2 = 2
+    mu_1 = 1
+    mu_2 = 1
+    z_1 = np.sqrt(mu_1 / epsilon_1)
+    z_2 = np.sqrt(mu_2 / epsilon_2)
+
+    # Defining mesh properties
+    v = np.zeros(100)
+    rhos = np.ones(100)
+    rhos[50:99] = 2
+    epsilons = epsilon_1 * np.ones(100)
+    epsilons[50:99] = epsilon_2
+
+    v[0:49] = (epsilons[0:49] * mu_1) ** -2
+    v[50:99] = (epsilons[50:99] * mu_2) ** -2
+
+    # Setting up DG1D simulation
+    sp = DG1D(
+        n_order=3,
+        mesh=Mesh1D(-5.0, 5.0, 100, boundary_label="PEC"),
+        epsilon=epsilons,
+        rho=rhos
+    )
+    driver = MaxwellDriver(sp)
+
+    # Theoretical Transmission and Reflection Coefficients
+    T_E = 2 * z_2 / (z_1 + z_2)
+    R_E = (z_2 - z_1) / (z_1 + z_2)
+
+    # Initial conditions
+    final_time = 6
+    s0 = 0.50
+    initialFieldE = np.exp(-(sp.x + 2) ** 2 / (2 * s0 ** 2))
+    initialFieldH = initialFieldE
+
+    # Initialize fields in driver
+    driver['E'][:] = initialFieldE[:]
+    driver['H'][:] = initialFieldH[:]
     
+    # Run the simulation until the final time
+    driver.run_until(final_time)
+
+    # Test the transmission coefficient
+    max_electric_field_2 = np.max(driver['E'][50:99])
+    assert np.isclose(max_electric_field_2, T_E, atol=0.1)
+
+    # Test the reflection coefficient
+    min_electric_field_1 = np.min(driver['E'][0:49])
+    assert np.isclose(min_electric_field_1, R_E, atol=0.1)
+
+    # Animation loop
+    driver['E'][:] = initialFieldE[:]
+    driver['H'][:] = initialFieldH[:]
+
+    for _ in range(300):
+        driver.step()
+        plt.plot(sp.x, driver['E'], 'b', label="E-field")
+        plt.plot(sp.x, driver['H'], 'r', label="H-field")
+        plt.ylim(-1, 1.5)
+        plt.grid(which='both')
+        plt.pause(0.01)
+        plt.draw()  # Update the plot instead of clearing it
+        plt.legend()
+
+            
 def test_jacobiGL():
     assert np.all(np.array([-1.,  1.]) == dg.jacobiGL(0.0, 0.0, 1))
     assert np.all(np.array([-1.,  0,  1.]) == dg.jacobiGL(0.0, 0.0, 2))

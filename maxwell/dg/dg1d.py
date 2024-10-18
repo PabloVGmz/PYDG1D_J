@@ -184,7 +184,7 @@ class DG1D(SpatialDiscretization):
         flux_H = self.computeFluxH(E, H)
         rhs_drE = np.matmul(self.diff_matrix, E)
         rhsH = 1/self.mu * (np.multiply(-1*self.rx, rhs_drE) +
-                            np.matmul(self.lift, self.f_scale * flux_H)-np.matmul(self.rho,E))
+                            np.matmul(self.lift, self.f_scale * flux_H)-np.multiply(E,self.rho))
         return rhsH
 
     def computeRHS(self, fields):
