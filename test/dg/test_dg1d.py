@@ -24,8 +24,8 @@ def test_pec_dielectrico_upwind_J():
 
     # Defining mesh properties
     v = np.zeros(100)
-    rhos = np.ones(100)
-    rhos[50:99] = 2
+    sigmas = np.ones(100)
+    sigmas[50:99] = 2
     epsilons = epsilon_1 * np.ones(100)
     epsilons[50:99] = epsilon_2
 
@@ -37,7 +37,7 @@ def test_pec_dielectrico_upwind_J():
         n_order=3,
         mesh=Mesh1D(-5.0, 5.0, 100, boundary_label="PEC"),
         epsilon=epsilons,
-        rho=rhos
+        sigma=sigmas
     )
     driver = MaxwellDriver(sp)
 
