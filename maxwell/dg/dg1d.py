@@ -180,10 +180,10 @@ class DG1D(SpatialDiscretization):
     def computeRHSH(self, fields):
         E = fields['E']
         H = fields['H']
-        J = np.zeros((self.number_of_nodes_per_element+1, mesh.number_of_elements()))
+        J = np.zeros((self.number_of_nodes_per_element(), self.mesh.number_of_elements()))
 
-        for i in range(self.number_of_nodes_per_element+1)
-            for j in range(mesh.number_of_elements()):
+        for i in range(self.number_of_nodes_per_element()):
+            for j in range(self.mesh.number_of_elements()):
                 J[i][j]=E[i][j]*self.sigma[j]
 
         flux_H = self.computeFluxH(E, H)
