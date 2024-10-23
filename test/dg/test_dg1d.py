@@ -5,7 +5,7 @@ import pytest
 import time
 
 import maxwell.dg.dg1d_tools as dg
-import maxwell.dg.mesh1d as dg
+import maxwell.dg.mesh1d as ms
 from maxwell.driver import *
 from maxwell.dg.mesh1d import *
 from maxwell.dg.dg1d import *

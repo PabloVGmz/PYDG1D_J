@@ -5,7 +5,7 @@ import pytest
 import time
 
 import maxwell.dg.dg1d_tools as dg
-import maxwell.dg.mesh1d as dg
+import maxwell.dg.mesh1d as ms
 from maxwell.driver import *
 from maxwell.dg.mesh1d import *
 from maxwell.dg.dg1d import *
@@ -16,10 +16,8 @@ from nodepy import runge_kutta_method as rk
 
 def test_pec_dielectrico_upwind_J():
     # Defining material properties
-    epsilon_1 = 1
-    epsilon_2 = 2
-    mu_1 = 1
-    mu_2 = 1
+    epsilon_1 = 1.
+    epsilon_2 = 1.
 
 
     # Defining mesh properties
