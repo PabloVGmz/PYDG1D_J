@@ -18,11 +18,12 @@ def test_pec_dielectrico_upwind_J():
     # Defining material properties
     epsilon_1 = 1.
     epsilon_2 = 1.
-
+    sigma_1=1.
+    sigma_2=1.
 
     # Defining mesh properties
-    sigmas = np.ones(100)
-    sigmas[50:99] = 2
+    sigmas = sigma_1*np.ones(100)
+    sigmas[50:99] = sigma_2
     epsilons = epsilon_1 * np.ones(100)
     epsilons[50:99] = epsilon_2
 
@@ -39,7 +40,7 @@ def test_pec_dielectrico_upwind_J():
     # Initial conditions
     final_time = 6
     s0 = 0.50
-    initialFieldE = np.exp(-(sp.x + 2) ** 2 / (2 * s0 ** 2))
+    initialFieldE = np.exp(-(sp.x) ** 2 / (2 * s0 ** 2))
     initialFieldH = initialFieldE
 
     # Initialize fields in driver
