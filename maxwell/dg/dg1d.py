@@ -21,7 +21,7 @@ class DG1D(SpatialDiscretization):
         alpha = 0
         beta = 0
 
-        # Hago que se le pueda meter un vector, y en el caso de que no se le meta pille un vector de unos como en el programa original
+        # Epsilon implementation in 1D
 
         if epsilon is None:
             self.epsilon = np.ones(mesh.number_of_elements())
@@ -30,7 +30,7 @@ class DG1D(SpatialDiscretization):
         else:          
             self.epsilon = np.array(epsilon)
 
-        #Necesito rho para calcular J
+        # Sigma implementation necessary for J
         if sigma is None:
             self.sigma = np.zeros(mesh.number_of_elements())
         elif len(sigma) != mesh.number_of_elements():
@@ -173,7 +173,7 @@ class DG1D(SpatialDiscretization):
         rhs_drH = np.matmul(self.diff_matrix, H)
         rhsE = 1/self.epsilon * \
             (np.multiply(-1*self.rx, rhs_drH) +
-             np.matmul(self.lift, self.f_scale * flux_E)) #esto no cambia porque en esta ecuacion de maxwell no aparece J
+             np.matmul(self.lift, self.f_scale * flux_E)) 
 
         return rhsE
 
