@@ -15,15 +15,18 @@ from maxwell.fd.fd1d import *
 from nodepy import runge_kutta_method as rk
 
 def test_pec_dielectrico_upwind_J():
+    
+    Z_0=376.73
+
     # Defining material properties
     epsilon_1 = 1.
     epsilon_2 = 1.
     sigma_1=0.
-    sigma_2=1.
+    sigma_2=20.
 
     # Defining mesh properties
-    sigmas = sigma_1*np.ones(100)
-    sigmas[50:99] = sigma_2
+    sigmas = sigma_1*np.ones(100)/Z_0
+    sigmas[50:99] = sigma_2/Z_0
     epsilons = epsilon_1 * np.ones(100)
     epsilons[50:99] = epsilon_2
 
