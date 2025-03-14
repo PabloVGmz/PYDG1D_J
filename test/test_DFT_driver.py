@@ -86,8 +86,14 @@ def test_DFT_point():
 
     #Material distribution
     epsilon_1=1.0
-    Z_0=376.73
-    epsilon_r_material = 6.0
+    mu_0 = 4.0*np.pi*1e-7
+    eps_0 = 8.854187817e-12
+    Z_0=np.sqrt(mu_0/eps_0)
+    mu_r = 1.0
+    epsilon_r_material = 11.2
+    eps_r = epsilon_r_material
+    Z=np.sqrt((mu_0*mu_r)/(eps_0*eps_r))
+
     rho_material=1/1e10
 
     #Mesh
@@ -99,7 +105,7 @@ def test_DFT_point():
     epsilons[47:53] = epsilon_r_material
     sigmas=np.zeros(elements)
     #sigmas[49]=1.0/(rho_material*Z_0)
-    sigmas[47:53]=1.0/(rho_material*Z_0)
+    sigmas[47:53]=0.05*Z_0
 
 
     sp = DG1D(
@@ -113,9 +119,10 @@ def test_DFT_point():
     #Type of wave
     s0 = 0.025
     x0 = 0.25
-    final_time = 2.0
+    final_time = 4.0
     steps = int(np.ceil(final_time/driver.dt))
-    freq_vector = np.logspace(8, 9, 101)
+    freq_vector = np.logspace(8, 9, 301)
+    
 
     initialFieldE = np.exp(-(sp.x-x0)**2.0/(2.0*s0**2.0))
     initialFieldH = initialFieldE
@@ -124,16 +131,16 @@ def test_DFT_point():
     driver['E'][:] = initialFieldE[:]
     driver['H'][:] = initialFieldH[:]
     E_vector_R = []
-    E_vector_T=[]
-    E_vector_0=[]
+    E_vector_T = []
+    E_vector_0 = []
 
-    for _ in range(steps):
-        driver.step()
-        plt.plot(sp.x, driver['E'],'b')
-        plt.ylim(-1, 1.5)
-        plt.grid(which='both')
-        plt.pause(0.01)
-        plt.cla()
+    # for _ in range(steps):
+    #     driver.step()
+    #     plt.plot(sp.x, driver['E'],'b')
+    #     plt.ylim(-1, 1.5)
+    #     plt.grid(which='both')
+    #     plt.pause(0.01)
+    #     plt.cla()
 
     # #DFT calculations
     time_vector_coeffs = np.linspace(0.0, final_time, steps)
@@ -148,23 +155,26 @@ def test_DFT_point():
     for t in time_vector_coeffs:
         E_vector_0.append(np.exp(-(t-x0)**2.0/(2.0*s0**2.0)))
 
-    plt.plot(time_vector_coeffs,E_vector_0)
+    plt.plot(time_vector_coeffs,E_vector_0,'r', label='Incident Field')
+    plt.plot(time_vector_coeffs,E_vector_T,'b', label='Transmitted Field')
+    plt.plot(time_vector_coeffs,E_vector_R,'g', label='Reflected Field')
+    plt.legend()
     plt.xlim(0.0,final_time)
     plt.ylim(-1.0,1.2)
     plt.grid(which='both')
     plt.show()
 
-    plt.plot(time_vector_coeffs,np.abs(E_vector_T))
-    plt.xlim(0.0,final_time)
-    plt.ylim(-1.0,1.2)
-    plt.grid(which='both')
-    plt.show()
+    # plt.plot(time_vector_coeffs,E_vector_T)
+    # plt.xlim(0.0,final_time)
+    # plt.ylim(-1.0,1.2)
+    # plt.grid(which='both')
+    # plt.show()
 
-    plt.plot(time_vector_coeffs,np.abs(E_vector_R))
-    plt.xlim(0.0,final_time)
-    plt.ylim(-1.0,1.2)
-    plt.grid(which='both')
-    plt.show()
+    # plt.plot(time_vector_coeffs,E_vector_R)
+    # plt.xlim(0.0,final_time)
+    # plt.ylim(-1.0,1.2)
+    # plt.grid(which='both')
+    # plt.show()
 
     time_vector_coeffs_corrected = time_vector_coeffs / 299792458
 
@@ -174,8 +184,8 @@ def test_DFT_point():
 
     T = np.abs(dft_E_T) / np.abs(dft_0)
     R = np.abs(dft_E_R) / np.abs(dft_0)
-    dB_T=10*np.log10(T)
-    dB_R=10*np.log10(R)
+    dB_T=20*np.log10(T) 
+    dB_R=20*np.log10(R) 
     # plt.plot(freq_vector,R)
     # plt.xscale('log')
     # plt.grid(which='both')

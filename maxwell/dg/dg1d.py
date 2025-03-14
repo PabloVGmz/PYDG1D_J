@@ -168,28 +168,28 @@ class DG1D(SpatialDiscretization):
     def computeRHSE(self, fields):
         E = fields['E']
         H = fields['H']
-
-        flux_E = self.computeFluxE(E, H)
-        rhs_drH = np.matmul(self.diff_matrix, H)
-        rhsE = 1/self.epsilon * \
-            (np.multiply(-1*self.rx, rhs_drH) +
-             np.matmul(self.lift, self.f_scale * flux_E)) 
-
-        return rhsE
-
-    def computeRHSH(self, fields):
-        E = fields['E']
-        H = fields['H']
         J = np.zeros((self.number_of_nodes_per_element(), self.mesh.number_of_elements()))
 
         for i in range(self.number_of_nodes_per_element()):
             for j in range(self.mesh.number_of_elements()):
                 J[i][j]=E[i][j]*self.sigma[j]
 
+        flux_E = self.computeFluxE(E, H)
+        rhs_drH = np.matmul(self.diff_matrix, H)
+        rhsE = 1/self.epsilon * \
+            (np.multiply(-1*self.rx, rhs_drH) +
+             np.matmul(self.lift, self.f_scale * flux_E)-J) 
+
+        return rhsE
+
+    def computeRHSH(self, fields):
+        E = fields['E']
+        H = fields['H']
+
         flux_H = self.computeFluxH(E, H)
         rhs_drE = np.matmul(self.diff_matrix, E)
         rhsH = 1/self.mu * (np.multiply(-1*self.rx, rhs_drE) +
-                            np.matmul(self.lift, self.f_scale * flux_H)-J)
+                            np.matmul(self.lift, self.f_scale * flux_H))
         
         return rhsH
 
