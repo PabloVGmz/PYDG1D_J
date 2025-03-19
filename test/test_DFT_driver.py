@@ -88,24 +88,24 @@ def test_DFT_point():
     epsilon_1=1.0
     mu_0 = 4.0*np.pi*1e-7
     eps_0 = 8.854187817e-12
-    Z_0=np.sqrt(mu_0/eps_0)
-    mu_r = 1.0
-    epsilon_r_material = 11.2
-    eps_r = epsilon_r_material
-    Z=np.sqrt((mu_0*mu_r)/(eps_0*eps_r))
+    Z_0 = np.sqrt(mu_0/eps_0)
 
-    rho_material=1/1e10
+
+    epsilon_r_material = 50
+    rho_material = 1
 
     #Mesh
-    L1=0.0
-    L2=1.0
+    L1 = 0.0
+    L2 = 1.0
     elements=100
     epsilons = epsilon_1*np.ones(elements)
-    #epsilons[49]=epsilon_r_material
-    epsilons[47:53] = epsilon_r_material
-    sigmas=np.zeros(elements)
-    #sigmas[49]=1.0/(rho_material*Z_0)
-    sigmas[47:53]=0.05*Z_0
+    epsilons[25] = epsilon_r_material
+    epsilons[50] = epsilons[25]
+    epsilons[75] = epsilons[25]
+    sigmas = np.zeros(elements)
+    sigmas[25] = Z_0/rho_material
+    sigmas[50] = sigmas[25]
+    sigmas[75] = sigmas[25]
 
 
     sp = DG1D(
@@ -118,8 +118,8 @@ def test_DFT_point():
 
     #Type of wave
     s0 = 0.025
-    x0 = 0.25
-    final_time = 4.0
+    x0 = 0.1
+    final_time = 25.0
     steps = int(np.ceil(final_time/driver.dt))
     freq_vector = np.logspace(8, 9, 301)
     
@@ -150,7 +150,7 @@ def test_DFT_point():
     for _ in range(steps):
         driver.step()
         E_vector_R.append(driver['E'][3][5])
-        E_vector_T.append(driver['E'][3][60])
+        E_vector_T.append(driver['E'][3][95])
 
     for t in time_vector_coeffs:
         E_vector_0.append(np.exp(-(t-x0)**2.0/(2.0*s0**2.0)))
