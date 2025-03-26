@@ -64,7 +64,9 @@ def test_TFG_ep50_rho1_multislab_1cm():
     final_time = 25.0
     steps = int(np.ceil(final_time/driver.dt))
     freq_vector = np.logspace(8, 9, 301)
-    
+    additional_freq_1 = np.linspace(612e6,730e6,40)
+    freq_vector = np.union1d(freq_vector, additional_freq_1)
+ 
 
     initialFieldE = np.exp(-(sp.x-x0)**2.0/(2.0*s0**2.0))
     initialFieldH = initialFieldE
@@ -102,6 +104,12 @@ def test_TFG_ep50_rho1_multislab_1cm():
     R = np.abs(dft_E_R) / np.abs(dft_0)
     dB_T=20*np.log10(T) 
     dB_R=20*np.log10(R) 
+
+    # Save data to .dat file
+    with open("transmission_reflection_data1.dat", "w") as f:
+        f.write("# Frequency (MHz)    Transmission (dB)    Reflection (dB)\n")
+        for freq, t, r in zip(freq_vector / 1e6, dB_T, dB_R):
+            f.write(f"{freq:.6e}    {t:.6e}    {r:.6e}\n")
 
     # T and R graph 
     plt.figure(figsize=(10, 8))
@@ -157,6 +165,10 @@ def test_TFG_ep112_rho7_multislab_1cm():
     final_time = 25.0
     steps = int(np.ceil(final_time/driver.dt))
     freq_vector = np.logspace(8, 9, 301)
+    additional_freq_1 = np.linspace(686e6,706e6,25)
+    additional_freq_2 = np.linspace(817e6,843e6,25)
+    freq_vector = np.union1d(freq_vector, additional_freq_1)
+    freq_vector = np.union1d(freq_vector, additional_freq_2)
     
 
     initialFieldE = np.exp(-(sp.x-x0)**2.0/(2.0*s0**2.0))
@@ -195,6 +207,12 @@ def test_TFG_ep112_rho7_multislab_1cm():
     R = np.abs(dft_E_R) / np.abs(dft_0)
     dB_T=20*np.log10(T) 
     dB_R=20*np.log10(R) 
+
+    # Save data to .dat file
+    with open("transmission_reflection_data2.dat", "w") as f:
+        f.write("# Frequency (MHz)    Transmission (dB)    Reflection (dB)\n")
+        for freq, t, r in zip(freq_vector / 1e6, dB_T, dB_R):
+            f.write(f"{freq:.6e}    {t:.6e}    {r:.6e}\n")
 
     # T and R graph 
     plt.figure(figsize=(10, 8))
@@ -250,6 +268,10 @@ def test_TFG_ep20_rho5_multislab_1cm():
     final_time = 25.0
     steps = int(np.ceil(final_time/driver.dt))
     freq_vector = np.logspace(8, 9, 301)
+    additional_freq_1 = np.linspace(650e6,675e6,25)
+    additional_freq_2 = np.linspace(755e6,778e6,25)
+    freq_vector = np.union1d(freq_vector, additional_freq_1)
+    freq_vector = np.union1d(freq_vector, additional_freq_2)
     
 
     initialFieldE = np.exp(-(sp.x-x0)**2.0/(2.0*s0**2.0))
@@ -288,6 +310,12 @@ def test_TFG_ep20_rho5_multislab_1cm():
     R = np.abs(dft_E_R) / np.abs(dft_0)
     dB_T=20*np.log10(T) 
     dB_R=20*np.log10(R) 
+
+    # Save data to .dat file
+    with open("transmission_reflection_data3.dat", "w") as f:
+        f.write("# Frequency (MHz)    Transmission (dB)    Reflection (dB)\n")
+        for freq, t, r in zip(freq_vector / 1e6, dB_T, dB_R):
+            f.write(f"{freq:.6e}    {t:.6e}    {r:.6e}\n")
 
     # T and R graph 
     plt.figure(figsize=(10, 8))
@@ -343,6 +371,10 @@ def test_TFG_ep5_rho15_multislab_1cm():
     final_time = 25.0
     steps = int(np.ceil(final_time/driver.dt))
     freq_vector = np.logspace(8, 9, 301)
+    additional_freq_1 = np.linspace(733e6,751e6,25)
+    additional_freq_2 = np.linspace(908e6,927e6,25)
+    freq_vector = np.union1d(freq_vector, additional_freq_1)
+    freq_vector = np.union1d(freq_vector, additional_freq_2)
     
 
     initialFieldE = np.exp(-(sp.x-x0)**2.0/(2.0*s0**2.0))
@@ -381,6 +413,13 @@ def test_TFG_ep5_rho15_multislab_1cm():
     R = np.abs(dft_E_R) / np.abs(dft_0)
     dB_T=20*np.log10(T) 
     dB_R=20*np.log10(R) 
+
+    # Save data to .dat file
+    with open("transmission_reflection_data4.dat", "w") as f:
+        f.write("# Frequency (MHz)    Transmission (dB)    Reflection (dB)\n")
+        for freq, t, r in zip(freq_vector / 1e6, dB_T, dB_R):
+            f.write(f"{freq:.6e}    {t:.6e}    {r:.6e}\n")
+
 
     # T and R graph 
     plt.figure(figsize=(10, 8))
